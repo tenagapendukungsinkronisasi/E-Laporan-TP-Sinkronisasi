@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>e-Laporan & Logbook Tenaga Pendukung | 2025–2030</title>
+<style>
+:root {
+  --bg: #f3f6fa;
+  --card: #ffffff;
+  --ink: #162033;
+  --muted: #68758a;
+  --line: #dfe6ee;
+  --primary: #14532d;
+  --primary2: #166534;
+  --soft: #ecfdf5;
+  --danger: #b91c1c;
+  --accent: #2563eb;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* HALAMAN LOGIN */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #10261c 0%, #166534 100%);
+  padding: 20px;
+}
+
+.login-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  padding: 32px 28px;
+  text-align: center;
+}
+
+.login-header img { width: 72px; height: 72px; border-radius: 12px; margin-bottom: 12px; object-fit: contain; }
+.login-header h2 { font-size: 18px; margin: 0 0 6px; color: var(--ink); line-height: 1.3; }
+.login-header p { font-size: 12px; color: var(--muted); margin: 0 0 24px; }
+
+.form-group { text-align: left; margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; outline: none; }
+.form-group input:focus { border-color: var(--primary2); }
+
+.login-btn {
+  width: 100%; padding: 12px; background: var(--primary2); color: #fff;
+  border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 10px;
+}
+.login-btn:hover { background: var(--primary); }
+
+.login-alert {
+  background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 8px;
+  font-size: 12px; margin-bottom: 16px; display: none;
+}
+
+/* DASHBOARD UTAMA */
+.app { display: none; min-height: 100vh; }
+
+.side {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 280px;
+  background: #10261c; color: white; padding: 22px 15px;
+  overflow: auto; display: flex; flex-direction: column; justify-content: space-between;
+}
+
+.logo-container { display: flex; align-items: center; gap: 12px; padding: 8px 10px 20px; }
+.logo-img-side { width: 42px; height: 42px; flex-shrink: 0; border-radius: 6px; object-fit: contain; }
+.logo-text { font-weight: 800; font-size: 11px; line-height: 1.3; color: #fff; text-transform: uppercase; }
+.logo-text small { display: block; font-size: 10px; color: #a7f3d0; margin-top: 4px; font-weight: normal; }
+
+.dashboard-title-box { display: flex; align-items: center; gap: 15px; }
+.dashboard-logo-img { width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; object-fit: contain; }
+
+.nav button {
+  width: 100%; border: 0; background: transparent; color: #d1fae5;
+  text-align: left; padding: 12px; border-radius: 99px; margin: 3px 0; cursor: pointer;
+  font-weight: 600; font-size: 13px; transition: all 0.2s;
+}
+.nav button.active, .nav button:hover { background: #1f4b35; color: #fff; }
+
+.user-profile {
+  background: #1f4b35; padding: 12px; border-radius: 10px; margin-top: 15px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.user-profile .info { font-size: 12px; color: #fff; }
+.user-profile .info small { display: block; color: #a7f3d0; font-size: 10px; }
+
+.logout-btn {
+  background: #b91c1c; color: #fff; border: none; padding: 6px 10px;
+  border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold;
+}
+
+.main { margin-left: 280px; width: calc(100% - 280px); padding: 28px; max-width: 1500px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px; }
+
+h1 { font-size: 22px; margin: 0; line-height: 1.3; }
+.sub { color: var(--muted); font-size: 13px; margin-top: 5px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.card, .panel { background: var(--card); border: 1px solid var(--line); border-radius: 15px; box-shadow: 0 4px 15px #10261c0a; }
+.card { padding: 18px; }
+.card .n { font-size: 28px; font-weight: 800; margin-top: 6px; }
+.card .l { font-size: 12px; color: var(--muted); }
+
+.panel { padding: 18px; margin-top: 16px; }
+.panel h2 { font-size: 17px; margin: 0 0 14px; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field { margin-bottom: 13px; }
+.field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.field input, .field textarea, .field select {
+  width: 100%; padding: 11px; border: 1px solid #d5dee8; border-radius: 9px; font: inherit; background: #fff;
+}
+.field textarea { min-height: 80px; resize: vertical; }
+
+.activity-item-box {
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px; margin-bottom: 14px; position: relative;
+}
+.activity-item-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; font-weight: 700; font-size: 13px; color: var(--primary2);
+}
+
+.btn { border: 0; border-radius: 99px; padding: 10px 18px; background: var(--primary2); color: white; font-weight: 700; cursor: pointer; }
+.btn:hover { opacity: 0.9; }
+.btn.secondary { background: #e8eef4; color: #26364a; }
+.btn.danger { background: #fee2e2; color: #991b1b; }
+.btn.warning { background: #fef3c7; color: #92400e; }
+.btn.accent { background: var(--accent); color: white; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.drop { border: 2px dashed #b8c8bc; padding: 18px; border-radius: 11px; background: #f8fcf9; }
+.files { font-size: 12px; color: var(--muted); margin-top: 7px; }
+
+.file-preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding: 10px; background: #f1f5f9; border-radius: 8px; }
+.file-preview-item { position: relative; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 6px; font-size: 11px; width: 110px; text-align: center; }
+.file-preview-item img { width: 100%; height: 70px; object-fit: cover; border-radius: 4px; }
+.file-preview-item .del-btn { position: absolute; top: -6px; right: -6px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; font-weight: bold; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { padding: 6px 4px; border: 1px solid #111; text-align: center; vertical-align: middle; }
+th { background: #f1f6f3; font-weight: 700; }
+.tablewrap { overflow: auto; max-height: 700px; }
+
+.tag { display: inline-block; padding: 4px 8px; border-radius: 20px; background: #dcfce7; color: #166534; font-size: 10px; font-weight: 800; }
+.muted { color: var(--muted); }
+
+.toast { position: fixed; right: 20px; bottom: 20px; background: #10261c; color: white; padding: 12px 16px; border-radius: 10px; display: none; z-index: 10000; }
+.loading-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 14px; border-radius: 8px; font-weight: 600; margin: 15px 0; }
+
+.collage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 10px; }
+.collage-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 4/3; background: #e2e8f0; }
+.collage-item img { width: 100%; height: 100%; object-fit: cover; }
+.collage-caption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.75); color: #fff; padding: 6px; font-size: 10px; }
+.logbook-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); margin: 2px; cursor: pointer; }
+
+/* PROGRES PEKERJAAN */
+.progress-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-bar-bg { background: #e2e8f0; height: 12px; border-radius: 99px; overflow: hidden; }
+.progress-bar-fill { background: var(--primary2); height: 100%; border-radius: 99px; transition: width 0.3s ease; }
+
+/* KOP SURAT KEDINASAN PU */
+.kop-surat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 4px double #000;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  position: relative;
+}
+.kop-logo {
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+}
+.kop-text {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+.kop-text .h1-pu { font-size: 13pt; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+.kop-text .h2-pu { font-size: 12pt; font-weight: bold; margin: 2px 0 0; letter-spacing: 0.5px; }
+.kop-text .h3-pu { font-size: 12pt; font-weight: bold; margin: 2px 0 0; text-transform: uppercase; }
+.kop-text .alamat-pu { font-size: 8.5pt; margin-top: 4px; font-weight: normal; line-height: 1.2; }
+
+/* FORM ABSENSI PER INDIVIDU */
+.att-person-card {
+  background: #fff;
+  border: 1px solid #111;
+  padding: 15px;
+  margin-bottom: 30px;
+  page-break-after: always;
+}
+.att-person-card:last-child {
+  page-break-after: auto;
+}
+.att-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 11pt;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  text-decoration: underline;
+}
+.att-info-table {
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
+}
+.att-info-table td {
+  border: none;
+  text-align: left;
+  padding: 2px 4px;
+}
+
+.att-select-code {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 9pt;
+  text-align-last: center;
+  cursor: pointer;
+}
+.att-select-code:focus { outline: none; background: #e2e8f0; }
+
+.weekend-cell { background-color: #fca5a5 !important; color: #7f1d1d; font-weight: bold; }
+
+/* TANDA TANGAN PEJABAT */
+.ttd-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 10pt;
+}
+.ttd-box {
+  width: 320px;
+  text-align: center;
+}
+
+/* LAPORAN A4 */
+.report-paper { background: #fff; padding: 35px 40px; border-radius: 8px; color: #111; font-family: 'Times New Roman', Times, serif; line-height: 1.6; }
+.report-header-title { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 12px; }
+.report-header-title h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase; margin: 0; line-height: 1.4; }
+.report-header-title p { font-size: 11pt; margin: 4px 0 0 0; text-transform: uppercase; font-weight: bold; color: #333; }
+.meta-table { width: 100%; margin-bottom: 25px; font-size: 11pt; border-collapse: collapse; }
+.meta-table td { padding: 4px 0; border: none; text-align: left; vertical-align: top; }
+.report-section-title { font-size: 11pt; font-weight: bold; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 4px; text-align: left;}
+.report-text { font-size: 11pt; text-align: justify; text-indent: 30px; margin-bottom: 12px; }
+.print-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+.print-gallery-item { border: 1px solid #ccc; padding: 8px; border-radius: 6px; text-align: center; }
+.print-gallery-item img { max-width: 100%; max-height: 180px; object-fit: cover; border-radius: 4px; }
+.print-gallery-item p { font-size: 10pt; margin: 6px 0 0 0; }
+
+/* PRINT STYLES PRESISI A4 & LANDSCAPE */
+@media print {
+  @page { size: A4 landscape; margin: 10mm 12mm; }
+  body { background: #fff !important; color: #000 !important; font-size: 10pt; }
+  .login-wrapper, .side, .top, .actions, .nav, .toast, .cards, #settings, #input, #home, #data, #progressPage { display: none !important; }
+  
+  body.print-logbook-only #report, body.print-logbook-only #attendancePage { display: none !important; }
+  body.print-logbook-only #logbookPage { display: block !important; }
+  
+  body.print-report-only #logbookPage, body.print-report-only #attendancePage { display: none !important; }
+  body.print-report-only #report { display: block !important; }
+  body.print-report-only @page { size: A4 portrait; margin: 15mm; }
+  
+  body.print-attendance-only #logbookPage, body.print-attendance-only #report { display: none !important; }
+  body.print-attendance-only #attendancePage { display: block !important; }
+  body.print-attendance-only #attendancePage .actions { display: none !important; }
+
+  .app, .main, .section, .panel { display: block !important; margin: 0 !important; padding: 0 !important; width: 100% !important; border: none !important; box-shadow: none !important; background: transparent !important; }
+  .att-person-card { border: none !important; padding: 0 !important; margin-bottom: 0 !important; }
+  .att-select-code { -webkit-appearance: none; -moz-appearance: none; appearance: none; border: none; font-weight: bold; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGO KEMENTERIAN PU RESMI BASE64 -->
+<script>
+const LOGO_PU_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77";
+</script>
+
+<!-- FORM LOGIN -->
+<div class="login-wrapper" id="loginWrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77" alt="Logo Kementerian PU">
+      <h2>Masuk Logbook</h2>
+      <p>Tenaga Pendukung Sinkronisasi Program dan Pengendalian Penyelenggaraan Infrastruktur Karya</p>
+    </div>
+
+    <div class="login-alert" id="loginAlert">Username atau Password salah!</div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" required>
+      </div>
+      <button type="submit" class="login-btn">Masuk Ke Sistem</button>
+    </form>
+  </div>
+</div>
+
+<!-- CONTAINER UTAMA -->
+<div class="app" id="appContainer">
+  <aside class="side">
+    <div>
+      <div class="logo-container">
+        <img class="logo-img-side" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77" alt="Logo PU">
+        <div class="logo-text">TENAGA PENDUKUNG SINKRONISASI PROGRAM DAN PENGENDALIAN PENYELENGGARAAN INFRASTRUKTUR KARYA<small>TA. 2025 – 2030</small></div>
+      </div>
+      <div class="nav">
+        <button class="active" onclick="showPage('home',this)">▦ Dashboard</button>
+        <button onclick="showPage('input',this)">＋ Input Kegiatan</button>
+        <button onclick="showPage('logbookPage',this)">📋 Logbook Harian</button>
+        <button onclick="showPage('attendancePage',this)">☑ Absensi Kehadiran</button>
+        <button onclick="showPage('progressPage',this)">📊 Progres Pekerjaan</button>
+        <button onclick="showPage('data',this)">▤ Kelola Data</button>
+        <button onclick="showPage('report',this)">▱ Laporan Naratif AI</button>
+        <button onclick="showPage('settings',this)">⚙ Pengaturan API</button>
+      </div>
+    </div>
+
+    <div class="user-profile">
+      <div class="info">
+        <b id="loggedUser">Admin</b>
+        <small>Tenaga Pendukung BPBK</small>
+      </div>
+      <button class="logout-btn" onclick="logout()">Keluar</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section id="home" class="section active">
+      <div class="top">
+        <div class="dashboard-title-box">
+          <img class="dashboard-logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77" alt="Logo PU">
+          <div>
+            <h1>Dashboard Utama</h1>
+            <div class="sub">Tenaga Pendukung Sinkronisasi Program dan Pengendalian Penyelenggaraan Infrastruktur Karya (2025–2030)</div>
+          </div>
+        </div>
+        <span class="tag">PERIODE: MEI 2025 – DES 2030</span>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="l">Total Kegiatan</div><div class="n" id="total">0</div></div>
+        <div class="card"><div class="l">Tahun Ini</div><div class="n" id="thisYearCount">0</div></div>
+        <div class="card"><div class="l">Bulan Ini</div><div class="n" id="thisMonthCount">0</div></div>
+        <div class="card"><div class="l">Total Berkas & Dokumentasi</div><div class="n" id="docs">0</div></div>
+      </div>
+      <div class="panel">
+        <h2>Dokumentasi Foto Terbaru</h2>
+        <div id="dashboardCollage"></div>
+      </div>
+      <div class="panel"><h2>Kegiatan Terbaru</h2><div id="recent" class="tablewrap"></div></div>
+    </section>
+
+    <!-- INPUT KEGIATAN -->
+    <section id="input" class="section">
+      <div class="top">
+        <div>
+          <h1 id="formTitle">Input Kegiatan Harian</h1>
+          <div class="sub">Pilih tanggal dan tambahkan satu atau beberapa kegiatan yang dilaksanakan pada hari tersebut.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <input type="hidden" id="editId" value="">
+        
+        <div class="field" style="max-width: 400px; margin-bottom: 20px;">
+          <label>Tanggal * (Rentang Mei 2025 - Des 2030)</label>
+          <input id="date" type="date" min="2025-05-01" max="2030-12-31" onclick="this.showPicker && this.showPicker()" style="cursor:pointer; font-weight:bold;">
+        </div>
+
+        <div id="activityItemsContainer"></div>
+
+        <div style="margin-bottom: 20px;" id="addActivityBtnBox">
+          <button type="button" class="btn secondary" onclick="addActivityRow()" style="border: 1px dashed var(--primary2); color: var(--primary2);">
+            ＋ Tambah Kegiatan Lain Untuk Tanggal Ini
+          </button>
+        </div>
+        
+        <div class="actions">
+          <button class="btn" id="saveBtn" onclick="saveActivity()">Simpan Ke Logbook</button>
+          <button class="btn secondary" onclick="resetForm()">Batal / Kosongkan Form</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGBOOK HARIAN -->
+    <section id="logbookPage" class="section">
+      <div class="top">
+        <div>
+          <h1>LOGBOOK TENAGA PENDUKUNG SINKRONISASI PROGRAM DAN PENGENDALIAN PENYELENGGARAAN INFRASTRUKTUR KARYA</h1>
+          <div class="sub">BALAI PENATAAN BANGUNAN, PRASARANA DAN KAWASAN BENGKULU</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="actions" style="margin-bottom:15px; justify-content: space-between;">
+          <div style="display:flex; gap:8px;">
+            <select id="logbookYearFilter" onchange="renderLogbook()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px;font-weight:bold;"></select>
+            <select id="logbookMonthFilter" onchange="renderLogbook()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px;font-weight:bold;"></select>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" onclick="printLogbookOnly()">Cetak Logbook (A4)</button>
+          </div>
+        </div>
+        
+        <div id="logbookPrintArea">
+          <div class="tablewrap" id="logbookTableContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABSENSI KEHADIRAN -->
+    <section id="attendancePage" class="section">
+      <div class="top">
+        <div>
+          <h1>DAFTAR HADIR DOKUMEN KEDINASAN RESMI</h1>
+          <div class="sub">Kementerian Pekerjaan Umum - Balai Penataan Bangunan, Prasarana dan Kawasan Bengkulu</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="actions" style="margin-bottom:15px; justify-content: space-between;">
+          <div style="display:flex; gap:8px;">
+            <select id="attYearFilter" onchange="renderAttendance()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px;font-weight:bold;"></select>
+            <select id="attMonthFilter" onchange="renderAttendance()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px;font-weight:bold;"></select>
+          </div>
+          <div class="actions">
+            <button class="btn accent" onclick="printAttendanceOnly()">🖨 Cetak Presisi A4 Landscape</button>
+          </div>
+        </div>
+
+        <div id="attendancePrintArea">
+          <!-- KOLEKSI FORMULIR KEDINASAN UNTUK TIAP INDIVIDU -->
+          <div id="attendancePersonCards"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRES PEKERJAAN -->
+    <section id="progressPage" class="section">
+      <div class="top">
+        <div>
+          <h1>Progres Pekerjaan & Target Realisasi (2025–2030)</h1>
+          <div class="sub">Unggah file sumber data pekerjaan dan pantau pencapaian tahunan.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Unggah Berkas Sumber Data Progres</h2>
+        <div class="field">
+          <label>Unggah Berkas Data Progres (CSV / JSON / Excel / Text / PDF)</label>
+          <div class="drop">
+            <input type="file" id="progressSourceFile" accept=".csv, .json, .txt, .pdf, .xlsx, .xls" onchange="handleProgressFileUpload(event)">
+            <div class="files" id="progressFileStatus">Pilih berkas sumber data untuk kalkulasi progres otomatis.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Ringkasan Progres Pekerjaan Tahunan</h2>
+        <div id="progressContainer"></div>
+      </div>
+    </section>
+
+    <!-- KELOLA DATA -->
+    <section id="data" class="section">
+      <div class="top"><div><h1>Kelola Data Kegiatan</h1></div></div>
+      <div class="panel">
+        <div class="actions" style="margin-bottom:12px">
+          <input id="filter" placeholder="Cari kegiatan..." oninput="renderData()" style="flex:1;padding:10px;border:1px solid #d5dee8;border-radius:9px">
+          <select id="yearDataFilter" onchange="renderData()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px"></select>
+          <select id="monthFilter" onchange="renderData()" style="padding:10px;border:1px solid #d5dee8;border-radius:9px"></select>
+        </div>
+        <div class="tablewrap" id="dataTable"></div>
+      </div>
+    </section>
+
+    <!-- LAPORAN AI -->
+    <section id="report" class="section">
+      <div class="top"><div><h1>Laporan Naratif Bulanan (Gemini AI)</h1><div class="sub">Sintesis Kronologis Kegiatan & Dokumentasi Foto Resmi A4.</div></div></div>
+      <div class="panel">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <label style="font-size:12px; font-weight:bold;">Pilih Periode:</label>
+          <select id="reportYearSelect" style="padding:8px; border-radius:6px; border:1px solid var(--line);"></select>
+          <select id="reportMonthSelect" style="padding:8px; border-radius:6px; border:1px solid var(--line);"></select>
+          <button class="btn accent" onclick="generateReportFromSelect()">Proses Narasi Laporan</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="actions" style="margin-bottom:15px">
+          <button class="btn" onclick="copyReport()">Salin Text Narasi</button>
+          <button class="btn secondary" onclick="printReportOnly()">Cetak Laporan Bulanan (A4)</button>
+        </div>
+        <div id="reportBody"><p class="muted">Pilih bulan dan tahun lalu klik "Proses Narasi Laporan".</p></div>
+      </div>
+    </section>
+
+    <!-- PENGATURAN API -->
+    <section id="settings" class="section">
+      <div class="top"><div><h1>Pengaturan API Gemini</h1><div class="sub">Masukkan API Key Gemini Anda untuk pemrosesan laporan otomatis.</div></div></div>
+      <div class="panel">
+        <div class="field">
+          <label>Gemini API Key</label>
+          <input type="password" id="apiKeyInput" placeholder="Masukkan Google Gemini API Key">
+        </div>
+        <button class="btn" onclick="saveApiKey()">Simpan API Key</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const VALID_USER = "admin";
+const VALID_PASS = "admin123";
+
+const KEY = 'elaporan_spppick_2025_2030';
+const PROGRESS_KEY = 'progress_data_2025_2030';
+const ATTENDANCE_KEY = 'attendance_data_2025_2030';
+const API_KEY_STORAGE = 'gemini_api_key_2026';
+
+let activities = JSON.parse(localStorage.getItem(KEY) || '[]');
+let progressData = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
+let attendanceData = JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '{}');
+let currentReport = '';
+let activityRowCount = 0;
+
+const YEARS = ['2025', '2026', '2027', '2028', '2029', '2030'];
+const MONTHS = [
+  { id: '01', name: 'Januari' }, { id: '02', name: 'Februari' }, { id: '03', name: 'Maret' },
+  { id: '04', name: 'April' }, { id: '05', name: 'Mei' }, { id: '06', name: 'Juni' },
+  { id: '07', name: 'Juli' }, { id: '08', name: 'Agustus' }, { id: '09', name: 'September' },
+  { id: '10', name: 'Oktober' }, { id: '11', name: 'November' }, { id: '12', name: 'Desember' }
+];
+
+const PERSONNEL = [
+  { name: "Nanda Septa Winarko, ST.", role: "Tenaga Pendukung Pengendalian Program" },
+  { name: "Renitha Sari", role: "Tenaga Pendukung Administrasi & Sinkronisasi" }
+];
+
+const CODES = [
+  { code: 'H', label: '✓ (Hadir)' },
+  { code: 'DL', label: 'DL (Dinas Luar)' },
+  { code: 'S', label: 'S (Sakit)' },
+  { code: 'I', label: 'I (Izin)' },
+  { code: 'C', label: 'C (Cuti)' },
+  { code: 'WS', label: 'WS (Workshop)' },
+  { code: 'PL', label: 'PL (Pelatihan)' },
+  { code: 'TK', label: 'TK (Tanpa Keterangan)' }
+];
+
+function initDropdowns() {
+  const logbookYearSel = document.getElementById('logbookYearFilter');
+  const logbookMonthSel = document.getElementById('logbookMonthFilter');
+  const attYearSel = document.getElementById('attYearFilter');
+  const attMonthSel = document.getElementById('attMonthFilter');
+  const yearDataSel = document.getElementById('yearDataFilter');
+  const monthSel = document.getElementById('monthFilter');
+  const reportYearSel = document.getElementById('reportYearSelect');
+  const reportMonthSel = document.getElementById('reportMonthSelect');
+
+  logbookYearSel.innerHTML = YEARS.map(y => `<option value="${y}" ${y==='2026'?'selected':''}>Tahun ${y}</option>`).join('');
+  attYearSel.innerHTML = YEARS.map(y => `<option value="${y}" ${y==='2026'?'selected':''}>Tahun ${y}</option>`).join('');
+  yearDataSel.innerHTML = `<option value="">Semua Tahun</option>` + YEARS.map(y => `<option value="${y}">Tahun ${y}</option>`).join('');
+  reportYearSel.innerHTML = YEARS.map(y => `<option value="${y}" ${y==='2026'?'selected':''}>${y}</option>`).join('');
+
+  const monthOptions = MONTHS.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+  logbookMonthSel.innerHTML = monthOptions;
+  attMonthSel.innerHTML = monthOptions;
+  monthSel.innerHTML = `<option value="">Semua Bulan</option>` + monthOptions;
+  reportMonthSel.innerHTML = monthOptions;
+
+  logbookMonthSel.value = '03';
+  attMonthSel.value = '03';
+  reportMonthSel.value = '03';
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const userVal = document.getElementById('username').value.trim();
+  const passVal = document.getElementById('password').value.trim();
+  const alertBox = document.getElementById('loginAlert');
+
+  if (userVal === VALID_USER && passVal === VALID_PASS) {
+    alertBox.style.display = 'none';
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('loggedUser', userVal);
+    checkAuth();
+  } else {
+    alertBox.style.display = 'block';
+  }
+});
+
+function checkAuth() {
+  const isAuth = sessionStorage.getItem('isLoggedIn');
+  if (isAuth === 'true') {
+    document.getElementById('loginWrapper').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'flex';
+    document.getElementById('loggedUser').textContent = sessionStorage.getItem('loggedUser') || 'Admin';
+    initDropdowns();
+    renderHome();
+    renderProgressView();
+    resetForm();
+  } else {
+    document.getElementById('loginWrapper').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('isLoggedIn');
+  sessionStorage.removeItem('loggedUser');
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  checkAuth();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkAuth();
+  document.getElementById('apiKeyInput').value = localStorage.getItem(API_KEY_STORAGE) || '';
+});
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  localStorage.setItem(API_KEY_STORAGE, key);
+  toast('API Key berhasil disimpan!');
+}
+
+function showPage(id, btn){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active')); 
+  if(btn) btn.classList.add('active');
+  if(id==='home') renderHome(); 
+  if(id==='data') renderData();
+  if(id==='logbookPage') renderLogbook();
+  if(id==='attendancePage') renderAttendance();
+  if(id==='progressPage') renderProgressView();
+}
+
+function toast(t){
+  let x=document.getElementById('toast');
+  x.textContent=t;
+  x.style.display='block';
+  setTimeout(()=>x.style.display='none',2200);
+}
+
+function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+function getDayName(dateString) {
+  if(!dateString) return '';
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const d = new Date(dateString);
+  return days[d.getDay()];
+}
+
+function formatDateIndo(dateString) {
+  if(!dateString) return '';
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const parts = dateString.split('-');
+  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+}
+
+function openInNewTab(dataUrl) {
+  const win = window.open();
+  if(win) {
+    win.document.write(`<iframe src="${dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+  }
+}
+
+async function processPhotos(files) {
+  let photoData = [];
+  for (let file of files) {
+    let dataUrl = await new Promise((resolve) => {
+      let reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    photoData.push({ name: file.name, dataUrl: dataUrl });
+  }
+  return photoData;
+}
+
+async function processDocs(files) {
+  let docData = [];
+  for (let file of files) {
+    let dataUrl = await new Promise((resolve) => {
+      let reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    docData.push({ name: file.name, size: file.size, type: file.type, dataUrl: dataUrl });
+  }
+  return docData;
+}
+
+function addActivityRow(data = null) {
+  activityRowCount++;
+  const id = activityRowCount;
+  const container = document.getElementById('activityItemsContainer');
+  
+  const div = document.createElement('div');
+  div.className = 'activity-item-box';
+  div.id = `activityBox_${id}`;
+  
+  div.innerHTML = `
+    <div class="activity-item-header">
+      <span>Kegiatan #${id}</span>
+      ${id > 1 ? `<button type="button" class="btn danger" style="padding:4px 8px; font-size:11px;" onclick="removeActivityRow(${id})">Hapus Kegiatan Ini</button>` : ''}
+    </div>
+    <div class="grid">
+      <div class="field"><label>Kegiatan yang Dilakukan *</label><input class="act-name" value="${data ? esc(data.name) : ''}" placeholder="Contoh: Rapat Koordinasi Sinkronisasi Program"></div>
+      <div class="field"><label>Keterangan / Lokasi *</label><input class="act-location" value="${data ? esc(data.location) : ''}" placeholder="Contoh: Balai Prasarana Permukiman Wilayah Bengkulu / Via Zoom"></div>
+    </div>
+    <div class="field"><label>Uraian Detail / Poin Pembahasan *</label><textarea class="act-desc" placeholder="Jelaskan proses pelaksanaan atau rincian kegiatan...">${data ? esc(data.desc) : ''}</textarea></div>
+    <div class="grid">
+      <div class="field"><label>Hasil / Output Kegiatan</label><textarea class="act-result" placeholder="Keputusan, berita acara, draft dokumen...">${data ? esc(data.result) : ''}</textarea></div>
+      <div class="field"><label>Catatan / Kendala</label><textarea class="act-issue" placeholder="Catatan tindak lanjut atau kendala...">${data ? esc(data.issue) : ''}</textarea></div>
+    </div>
+    
+    <div class="field existing-photos-field" style="${data && data.photos && data.photos.length ? '' : 'display:none;'}">
+      <label>Foto Terunggah Sebelumnya:</label>
+      <div class="file-preview-container existing-photos-container"></div>
+    </div>
+    
+    <div class="field existing-docs-field" style="${data && data.docs && data.docs.length ? '' : 'display:none;'}">
+      <label>Dokumen Terunggah Sebelumnya:</label>
+      <div class="file-preview-container existing-docs-container"></div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Tambah Dokumentasi Foto (Gambar)</label>
+        <div class="drop">
+          <input type="file" class="act-photos" accept="image/*" multiple onchange="updateFileListText(this, 'photoList_${id}')">
+          <div class="files" id="photoList_${id}">Belum ada foto baru dipilih.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tambah Dokumen Pendukung (PDF, Excel, Word, Text)</label>
+        <div class="drop">
+          <input type="file" class="act-docs" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png" onchange="updateFileListText(this, 'docList_${id}')">
+          <div class="files" id="docList_${id}">Pilih dokumen pendukung baru.</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  container.appendChild(div);
+
+  if(data) {
+    if(data.photos && data.photos.length) {
+      const pContainer = div.querySelector('.existing-photos-container');
+      pContainer.innerHTML = data.photos.map((p, idx) => `
+        <div class="file-preview-item">
+          <button class="del-btn" onclick="removeExistingPhoto(${data.id}, ${idx})">✕</button>
+          <img src="${p.dataUrl}" onclick="openInNewTab('${p.dataUrl}')" style="cursor:pointer;">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</div>
+        </div>
+      `).join('');
+    }
+    if(data.docs && data.docs.length) {
+      const dContainer = div.querySelector('.existing-docs-container');
+      dContainer.innerHTML = data.docs.map((d, idx) => `
+        <div class="file-preview-item" style="width:130px">
+          <button class="del-btn" onclick="removeExistingDoc(${data.id}, ${idx})">✕</button>
+          <div style="font-size:24px;margin:5px 0;">📄</div>
+          <a href="javascript:void(0)" onclick="openInNewTab('${d.dataUrl || '#'}')" style="font-size:10px;font-weight:bold;color:var(--accent);text-decoration:none;">${esc(d.name)}</a>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+function removeActivityRow(id) {
+  const box = document.getElementById(`activityBox_${id}`);
+  if(box) box.remove();
+}
+
+function updateFileListText(inputEl, targetId) {
+  const target = document.getElementById(targetId);
+  if(inputEl.files.length) {
+    target.textContent = [...inputEl.files].map(x => x.name).join(', ');
+  } else {
+    target.textContent = targetId.startsWith('photoList') ? 'Belum ada foto baru dipilih.' : 'Pilih dokumen pendukung baru.';
+  }
+}
+
+async function saveActivity(){
+  const editId = document.getElementById('editId').value;
+  const date = document.getElementById('date').value;
+  if(!date){ toast('Tanggal wajib diisi.'); return; }
+
+  const boxes = document.querySelectorAll('.activity-item-box');
+  if(boxes.length === 0) { toast('Tambahkan minimal 1 kegiatan.'); return; }
+
+  let hasValid = false;
+  
+  for (let box of boxes) {
+    const name = box.querySelector('.act-name').value.trim();
+    const desc = box.querySelector('.act-desc').value.trim();
+    const location = box.querySelector('.act-location').value.trim() || 'Balai Prasarana Permukiman Wilayah Bengkulu';
+    const result = box.querySelector('.act-result').value.trim();
+    const issue = box.querySelector('.act-issue').value.trim();
+
+    if(!name || !desc) continue;
+    hasValid = true;
+
+    const photoFiles = box.querySelector('.act-photos').files;
+    const docFiles = box.querySelector('.act-docs').files;
+
+    const newPhotos = await processPhotos(photoFiles);
+    const newDocs = await processDocs(docFiles);
+
+    if (editId) {
+      let idx = activities.findIndex(x => x.id == editId);
+      if (idx !== -1) {
+        activities[idx].date = date;
+        activities[idx].name = name;
+        activities[idx].location = location;
+        activities[idx].desc = desc;
+        activities[idx].result = result;
+        activities[idx].issue = issue;
+        if(newPhotos.length) activities[idx].photos = (activities[idx].photos || []).concat(newPhotos);
+        if(newDocs.length) activities[idx].docs = (activities[idx].docs || []).concat(newDocs);
+      }
+    } else {
+      const item = {
+        id: Date.now() + Math.random(),
+        date, name, location, desc, result, issue,
+        photos: newPhotos,
+        docs: newDocs
+      };
+      activities.push(item);
+    }
+  }
+
+  if(!hasValid) {
+    toast('Nama kegiatan & uraian detail wajib diisi untuk tiap kegiatan.');
+    return;
+  }
+
+  activities.sort((a,b)=>a.date.localeCompare(b.date));
+  localStorage.setItem(KEY, JSON.stringify(activities));
+  toast(editId ? 'Data logbook berhasil diperbarui.' : 'Kegiatan berhasil disimpan ke logbook.');
+  resetForm(); 
+  renderHome();
+}
+
+function editActivity(id){
+  const item = activities.find(x => x.id === id);
+  if(!item) return;
+  
+  document.getElementById('editId').value = item.id;
+  document.getElementById('date').value = item.date;
+  
+  document.getElementById('activityItemsContainer').innerHTML = '';
+  activityRowCount = 0;
+  addActivityRow(item);
+
+  document.getElementById('addActivityBtnBox').style.display = 'none';
+  document.getElementById('formTitle').textContent = 'Koreksi Data Logbook';
+  document.getElementById('saveBtn').textContent = 'Perbarui Data';
+  showPage('input', document.querySelectorAll('.nav button')[1]);
+}
+
+function removeExistingPhoto(actId, photoIdx) {
+  let idx = activities.findIndex(x => x.id === actId);
+  if(idx !== -1) {
+    activities[idx].photos.splice(photoIdx, 1);
+    localStorage.setItem(KEY, JSON.stringify(activities));
+    editActivity(actId);
+    toast('Foto dihapus.');
+  }
+}
+
+function removeExistingDoc(actId, docIdx) {
+  let idx = activities.findIndex(x => x.id === actId);
+  if(idx !== -1) {
+    activities[idx].docs.splice(docIdx, 1);
+    localStorage.setItem(KEY, JSON.stringify(activities));
+    editActivity(actId);
+    toast('Dokumen dihapus.');
+  }
+}
+
+function resetForm(){
+  document.getElementById('editId').value = '';
+  document.getElementById('date').value = '';
+  document.getElementById('activityItemsContainer').innerHTML = '';
+  document.getElementById('addActivityBtnBox').style.display = 'block';
+  activityRowCount = 0;
+  addActivityRow();
+
+  document.getElementById('formTitle').textContent = 'Input Kegiatan Harian';
+  document.getElementById('saveBtn').textContent = 'Simpan Ke Logbook';
+}
+
+function renderHome(){
+  const now = new Date();
+  const currentYear = now.getFullYear().toString();
+  const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+
+  document.getElementById('total').textContent=activities.length;
+  document.getElementById('thisYearCount').textContent=activities.filter(x=>x.date.startsWith(currentYear)).length;
+  document.getElementById('thisMonthCount').textContent=activities.filter(x=>x.date.startsWith(`${currentYear}-${currentMonth}`)).length;
+  document.getElementById('docs').textContent=activities.reduce((n,x)=>n+(x.photos?x.photos.length:0)+(x.docs?x.docs.length:0),0);
+
+  let allPhotos = [];
+  activities.forEach(act => {
+    if(act.photos && act.photos.length) {
+      act.photos.forEach(p => {
+        allPhotos.push({ date: act.date, name: act.name, url: p.dataUrl });
+      });
+    }
+  });
+
+  if(allPhotos.length) {
+    let collageHtml = '<div class="collage-grid">';
+    allPhotos.slice(-8).reverse().forEach(item => {
+      collageHtml += `<div class="collage-item">
+        <img src="${item.url}" onclick="openInNewTab('${item.url}')" style="cursor:pointer;" title="Klik untuk memperbesar">
+        <div class="collage-caption"><b>${formatDateIndo(item.date)}</b><br>${esc(item.name)}</div>
+      </div>`;
+    });
+    collageHtml += '</div>';
+    document.getElementById('dashboardCollage').innerHTML = collageHtml;
+  } else {
+    document.getElementById('dashboardCollage').innerHTML = '<div class="muted" style="padding:15px">Belum ada foto kegiatan yang diunggah.</div>';
+  }
+
+  let a=activities.slice(-6).reverse();
+  document.getElementById('recent').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Hari</th><th>Kegiatan yang dilakukan</th><th>Keterangan</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td><b>${getDayName(x.date)}</b></td><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.desc)}</span></td><td>${esc(x.location)}</td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Belum ada kegiatan.</div>';
+}
+
+function renderLogbook(){
+  const y = document.getElementById('logbookYearFilter').value;
+  const m = document.getElementById('logbookMonthFilter').value;
+  const monthObj = MONTHS.find(x => x.id === m);
+  const monthLabel = `${monthObj ? monthObj.name.toUpperCase() : ''} ${y}`;
+  const filtered = activities.filter(x => x.date.startsWith(`${y}-${m}`)).sort((a,b)=>a.date.localeCompare(b.date));
+
+  let html = `<div style="text-align:center;margin-bottom:15px;font-weight:bold;font-size:13px;line-height:1.5;">
+    LOGBOOK TENAGA PENDUKUNG SINKRONISASI PROGRAM DAN PENGENDALIAN PENYELENGGARAAN INFRASTRUKTUR KARYA<br>
+    BALAI PENATAAN BANGUNAN, PRASARANA DAN KAWASAN BENGKULU<br>
+    <span style="font-size:12px;color:var(--muted)">Periode ${monthLabel}</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:120px">Tanggal</th>
+        <th style="width:90px">Hari</th>
+        <th>Kegiatan yang dilakukan</th>
+        <th style="width:160px">Keterangan</th>
+        <th style="width:200px">Dokumentasi & Berkas</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  if(!filtered.length) {
+    html += `<tr><td colspan="5" style="text-align:center;padding:20px" class="muted">Belum ada data logbook untuk periode ${monthLabel}.</td></tr>`;
+  } else {
+    filtered.forEach(act => {
+      let docsList = [];
+      if(act.photos && act.photos.length) {
+        act.photos.forEach(p => docsList.push(`<img src="${p.dataUrl}" class="logbook-img" onclick="openInNewTab('${p.dataUrl}')" title="Buka foto">`));
+      }
+      if(act.docs && act.docs.length) {
+        act.docs.forEach(d => docsList.push(`<div style="font-size:11px;margin-top:2px;"><a href="javascript:void(0)" onclick="openInNewTab('${d.dataUrl || '#'}')" style="color:var(--accent);text-decoration:none;font-weight:bold;">📄 ${esc(d.name)}</a></div>`));
+      }
+
+      html += `<tr>
+        <td><b>${formatDateIndo(act.date)}</b></td>
+        <td>${getDayName(act.date)}</td>
+        <td style="text-align:left;"><b>${esc(act.name)}</b>${act.desc ? `<br><span style="color:#475569;font-size:11px">${esc(act.desc)}</span>` : ''}</td>
+        <td>${esc(act.location || 'Balai Prasarana Permukiman Wilayah Bengkulu')}</td>
+        <td>${docsList.length ? docsList.join('') : '<span class="muted">-</span>'}</td>
+      </tr>`;
+    });
+  }
+
+  html += `</tbody></table>`;
+  document.getElementById('logbookTableContainer').innerHTML = html;
+}
+
+/* RENDERING ABSENSI SESUAI FORMAT RESMI KEDINASAN PU KEMENTERIAN */
+function renderAttendance() {
+  const y = document.getElementById('attYearFilter').value;
+  const m = document.getElementById('attMonthFilter').value;
+  const monthObj = MONTHS.find(x => x.id === m);
+  const monthLabel = `${monthObj ? monthObj.name.toUpperCase() : ''} ${y}`;
+  
+  const daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
+  const periodKey = `${y}-${m}`;
+
+  if (!attendanceData[periodKey]) {
+    attendanceData[periodKey] = {};
+  }
+
+  let fullHtml = '';
+
+  PERSONNEL.forEach((person, pIdx) => {
+    if (!attendanceData[periodKey][pIdx]) {
+      attendanceData[periodKey][pIdx] = {};
+    }
+
+    let countSummary = { 'H': 0, 'DL': 0, 'S': 0, 'I': 0, 'C': 0, 'WS': 0, 'PL': 0, 'TK': 0 };
+
+    let cardHtml = `
+    <div class="att-person-card">
+      <!-- KOP SURAT KEMENTERIAN PU RESMI -->
+      <div class="kop-surat">
+        <img class="kop-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77" alt="Logo PU">
+        <div class="kop-text">
+          <div class="h1-pu">KEMENTERIAN PEKERJAAN UMUM</div>
+          <div class="h2-pu">DIREKTORAT JENDERAL CIPTA KARYA</div>
+          <div class="h3-pu">BALAI PENATAAN BANGUNAN, PRASARANA DAN KAWASAN BENGKULU</div>
+          <div class="alamat-pu">Jl. Pemuda No. 01, Padang Harapan, Kota Bengkulu | Telp/Fax: (0736) 21123</div>
+        </div>
+      </div>
+
+      <div class="att-title">DAFTAR HADIR TENAGA PENDUKUNG PERIODE BULAN ${monthLabel}</div>
+
+      <table class="att-info-table">
+        <tr>
+          <td style="width:160px; font-weight:bold;">Nama Tenaga Pendukung</td>
+          <td style="width:10px;">:</td>
+          <td style="font-weight:bold; font-size:11pt; color:#000;">${person.name}</td>
+          <td style="width:120px; font-weight:bold;">Tahun Anggaran</td>
+          <td style="width:10px;">:</td>
+          <td>TA. ${y}</td>
+        </tr>
+        <tr>
+          <td style="font-weight:bold;">Tugas / Jabatan</td>
+          <td>:</td>
+          <td>${person.role}</td>
+          <td style="font-weight:bold;">Satuan Kerja</td>
+          <td>:</td>
+          <td>BPBK Bengkulu</td>
+        </tr>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:30px">NO</th>
+            <th rowspan="2" style="width:160px">NAMA / TUGAS</th>
+            <th colspan="${daysInMonth}">TANGGAL KEHADIRAN BULAN ${monthObj ? monthObj.name.toUpperCase() : ''} ${y}</th>
+            <th rowspan="2" style="width:70px">JUMLAH HADIR</th>
+            <th rowspan="2" style="width:90px">PARAF / TTD</th>
+          </tr>
+          <tr>`;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayStr = String(d).padStart(2, '0');
+      const dateObj = new Date(`${y}-${m}-${dayStr}`);
+      const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6);
+      cardHtml += `<th style="padding:2px; font-size:8pt;" class="${isWeekend ? 'weekend-cell' : ''}">${d}</th>`;
+    }
+
+    cardHtml += `</tr></thead><tbody><tr>
+      <td>1</td>
+      <td style="text-align:left; font-weight:bold; font-size:8.5pt;">${person.name}</td>`;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayStr = String(d).padStart(2, '0');
+      const dateObj = new Date(`${y}-${m}-${dayStr}`);
+      const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6);
+
+      let currentCode = attendanceData[periodKey][pIdx][d] || (isWeekend ? 'LIB' : 'H');
+      if (!isWeekend && countSummary[currentCode] !== undefined) {
+        countSummary[currentCode]++;
+      }
+
+      if (isWeekend) {
+        cardHtml += `<td class="weekend-cell" style="font-size:7.5pt;">L</td>`;
+      } else {
+        cardHtml += `<td style="padding:0;">
+          <select class="att-select-code" onchange="updateAttendanceCode('${periodKey}', ${pIdx}, ${d}, this.value)">`;
+          CODES.forEach(c => {
+            cardHtml += `<option value="${c.code}" ${currentCode === c.code ? 'selected' : ''}>${c.code === 'H' ? '✓' : c.code}</option>`;
+          });
+        cardHtml += `</select>
+        </td>`;
+      }
+    }
+
+    cardHtml += `
+      <td style="font-weight:bold; font-size:10pt;">${countSummary['H']} Hari</td>
+      <td style="font-size:8pt; font-style:italic;"></td>
+    </tr></tbody></table>
+
+    <!-- RINGKASAN REKAPITULASI KETERANGAN -->
+    <div style="margin-top:10px; font-size:8.5pt; display:flex; justify-content:space-between; font-family:'Times New Roman', Times, serif;">
+      <div><b>Keterangan Kode Absensi:</b> H: Hadir (✓) | DL: Dinas Luar | S: Sakit | I: Izin | C: Cuti | WS: Workshop | PL: Pelatihan | TK: Tanpa Keterangan | L: Hari Libur</div>
+      <div><b>Total Kehadiran Kerja: ${countSummary['H']} Hari Kerja</b></div>
+    </div>
+
+    <!-- BLOK TANDA TANGAN PEJABAT (PPK) & TENAGA PENDUKUNG -->
+    <div class="ttd-container">
+      <div class="ttd-box">
+        Mengetahui,<br>
+        <b>PPK Tata Laksana<br>Balai Prasarana Permukiman Wilayah Bengkulu</b>
+        <br><br><br><br><br>
+        <b><u>Yuri Harliana. ST. ME</u></b><br>
+        NIP. 198009202009042001
+      </div>
+
+      <div class="ttd-box">
+        Bengkulu, ${daysInMonth} ${monthObj ? monthObj.name : ''} ${y}<br>
+        Tenaga Pendukung
+        <br><br><br><br><br>
+        <b><u>${person.name}</u></b>
+      </div>
+    </div>
+    </div>`;
+
+    fullHtml += cardHtml;
+  });
+
+  document.getElementById('attendancePersonCards').innerHTML = fullHtml;
+}
+
+function updateAttendanceCode(periodKey, personIdx, day, code) {
+  if (!attendanceData[periodKey]) attendanceData[periodKey] = {};
+  if (!attendanceData[periodKey][personIdx]) attendanceData[periodKey][personIdx] = {};
+  
+  attendanceData[periodKey][personIdx][day] = code;
+  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendanceData));
+  renderAttendance();
+}
+
+function printLogbookOnly() {
+  document.body.className = 'print-logbook-only';
+  window.print();
+}
+
+function printReportOnly() {
+  document.body.className = 'print-report-only';
+  window.print();
+}
+
+function printAttendanceOnly() {
+  document.body.className = 'print-attendance-only';
+  window.print();
+}
+
+function handleProgressFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    YEARS.forEach(yr => {
+      let yearCount = activities.filter(a => a.date.startsWith(yr)).length;
+      let target = 120;
+      let percent = Math.min(100, Math.round((yearCount / target) * 100));
+      
+      let existingIdx = progressData.findIndex(p => p.year === yr);
+      if(existingIdx !== -1) {
+        progressData[existingIdx].count = yearCount;
+        progressData[existingIdx].percent = percent;
+        progressData[existingIdx].sourceFile = file.name;
+      } else {
+        progressData.push({ year: yr, target: target, count: yearCount, percent: percent, sourceFile: file.name });
+      }
+    });
+
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressData));
+    document.getElementById('progressFileStatus').textContent = `Berkas data "${file.name}" berhasil diunggah & diproses.`;
+    toast('Data progres berhasil diperbarui!');
+    renderProgressView();
+  };
+  reader.readAsText(file);
+}
+
+function renderProgressView() {
+  const container = document.getElementById('progressContainer');
+  
+  if(!progressData.length) {
+    progressData = YEARS.map(yr => {
+      let count = activities.filter(a => a.date.startsWith(yr)).length;
+      let target = 120;
+      return { year: yr, target: target, count: count, percent: Math.min(100, Math.round((count/target)*100)), sourceFile: 'Logbook Internal' };
+    });
+  }
+
+  let html = '';
+  progressData.forEach(p => {
+    let liveCount = activities.filter(a => a.date.startsWith(p.year)).length;
+    let percent = Math.min(100, Math.round((liveCount / p.target) * 100));
+
+    html += `
+    <div class="progress-card">
+      <div class="progress-header">
+        <div>
+          <b style="font-size:15px;">Tahun Anggaran ${p.year}</b>
+          <span class="muted" style="font-size:11px; margin-left:10px;">Sumber File: ${esc(p.sourceFile || 'Internal')}</span>
+        </div>
+        <div style="font-weight:800; font-size:16px; color:var(--primary2);">${percent}%</div>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px;" class="muted">
+        <span>Realisasi: <b>${liveCount}</b> Kegiatan</span>
+        <span>Target: <b>${p.target}</b> Kegiatan/Tahun</span>
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function renderData(){
+  let q=(document.getElementById('filter').value||'').toLowerCase();
+  let y=document.getElementById('yearDataFilter').value;
+  let m=document.getElementById('monthFilter').value;
+  
+  let a=activities.filter(x=>{
+    let matchQuery = (!q || (x.name+' '+x.desc+' '+x.location).toLowerCase().includes(q));
+    let matchYear = (!y || x.date.startsWith(y));
+    let matchMonth = (!m || x.date.slice(5,7)===m);
+    return matchQuery && matchYear && matchMonth;
+  });
+
+  document.getElementById('dataTable').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Keterangan</th><th>Berkas & Dokumentasi</th><th>Aksi</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td style="text-align:left;"><b>${esc(x.name)}</b><br>${esc(x.desc)}</td><td>${esc(x.location)}</td><td>${(x.photos?x.photos.length:0)} foto, ${(x.docs?x.docs.length:0)} dok.</td><td><button class="btn warning" style="margin-bottom:4px" onclick="editActivity(${x.id})">Edit</button> <button class="btn danger" onclick="removeActivity(${x.id})">Hapus</button></td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Tidak ada data.</div>';
+}
+
+function removeActivity(id){
+  if(confirm('Hapus kegiatan ini dari logbook?')){
+    activities=activities.filter(x=>x.id!==id);
+    localStorage.setItem(KEY,JSON.stringify(activities));
+    renderData();renderHome();toast('Data dihapus.')
+  }
+}
+
+async function fetchGeminiNarrative(monthActivities, monthTitle) {
+  const apiKey = localStorage.getItem(API_KEY_STORAGE);
+  if (!apiKey) {
+    return "<p class='report-text'><em>(Catatan: Masukkan Gemini API Key pada menu 'Pengaturan API' untuk mengaktifkan pemrosesan sintesis kronologis otomatis).</em></p>";
+  }
+
+  const lightweightActivities = monthActivities.map(act => ({
+    date: act.date,
+    day: getDayName(act.date),
+    name: act.name,
+    location: act.location,
+    desc: act.desc,
+    result: act.result
+  }));
+
+  const prompt = `Anda adalah seorang penyusun laporan kedinasan resmi.
+Tolong buatkan narasi kronologis kegiatan yang lengkap, formal, lugas, dan mengalir untuk LAPORAN KRONOLOGIS PELAKSANAAN KEGIATAN TENAGA PENDUKUNG SINKRONISASI PROGRAM DAN PENGENDALIAN PENYELENGGARAAN INFRASTRUKTUR KARYA Bulan ${monthTitle}.
+
+Data kegiatan harian:
+${JSON.stringify(lightweightActivities, null, 2)}
+
+Instruksi Format:
+1. Susunlah narasi terstruktur yang menceritakan urutan kegiatan dari awal hingga akhir bulan.
+2. Gunakan Bahasa Indonesia formal dan baku yang sesuai dengan standar penulisan resmi kedinasan.
+3. Bungkus setiap paragraf dengan tag HTML <p class="report-text">.
+4. JANGAN menggunakan format Markdown (seperti # atau **).`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+
+    const data = await response.json();
+    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      return "<p class='report-text'>Gagal menghasilkan narasi dari Gemini API.</p>";
+    }
+  } catch (error) {
+    return `<p class='report-text' style='color:red'>Kesalahan koneksi API: ${error.message}</p>`;
+  }
+}
+
+function generateReportFromSelect() {
+  const y = document.getElementById('reportYearSelect').value;
+  const m = document.getElementById('reportMonthSelect').value;
+  generateReport(y, m);
+}
+
+async function generateReport(y, m){
+  const a=activities.filter(x => x.date.startsWith(`${y}-${m}`)).sort((p,q)=>p.date.localeCompare(q.date));
+  const monthObj = MONTHS.find(x => x.id === m);
+  const monthTitle = `${monthObj ? monthObj.name : ''} ${y}`;
+
+  document.getElementById('reportBody').innerHTML = `<div class="loading-box">⏳ Gemini AI sedang mengompilasi Laporan Kronologis Resmi A4 (${monthTitle})...</div>`;
+
+  let allPhotos = [];
+  a.forEach(act => {
+    if (act.photos && act.photos.length) {
+      act.photos.forEach(p => allPhotos.push({ actDate: act.date, actName: act.name, photo: p }));
+    }
+  });
+
+  const geminiNarrative = await fetchGeminiNarrative(a, monthTitle);
+
+  let body = `
+  <div class="report-paper">
+    <div class="report-header-title">
+      <h2>LAPORAN KRONOLOGIS PELAKSANAAN KEGIATAN TENAGA PENDUKUNG SINKRONISASI PROGRAM DAN PENGENDALIAN PENYELENGGARAAN INFRASTRUKTUR KARYA</h2>
+      <p>PERIODE BULAN ${monthTitle.toUpperCase()}</p>
+    </div>
+
+    <table class="meta-table">
+      <tr>
+        <td style="width: 170px;"><b>Satuan Kerja</b></td>
+        <td style="width: 15px;">:</td>
+        <td>Balai Penataan Bangunan, Prasarana dan Kawasan Bengkulu</td>
+      </tr>
+      <tr>
+        <td><b>Periode Kegiatan</b></td>
+        <td>:</td>
+        <td>Bulan ${monthTitle}</td>
+      </tr>
+      <tr>
+        <td><b>Total Kegiatan Terdata</b></td>
+        <td>:</td>
+        <td>${a.length} Kegiatan Terdata</td>
+      </tr>
+      <tr>
+        <td><b>Jumlah Dokumentasi</b></td>
+        <td>:</td>
+        <td>${allPhotos.length} Foto Lampiran</td>
+      </tr>
+    </table>
+
+    <div class="report-section-title">I. KRONOLOGIS PELAKSANAAN KEGIATAN</div>
+    <div class="report-narrative">${geminiNarrative}</div>
+
+    <div class="report-section-title">II. DOKUMENTASI FOTO KEGIATAN</div>`;
+
+    if(!allPhotos.length) {
+      body += '<p class="report-text" style="text-indent:0"><em>Tidak ada dokumentasi foto kegiatan yang diunggah untuk periode ini.</em></p>';
+    } else {
+      body += `<div class="print-gallery">`;
+      allPhotos.forEach(item => {
+        body += `
+        <div class="print-gallery-item">
+          <img src="${item.photo.dataUrl}">
+          <p><b>${formatDateIndo(item.actDate)}</b> - ${esc(item.actName)}</p>
+        </div>`;
+      });
+      body += `</div>`;
+    }
+
+  body += `</div>`;
+
+  document.getElementById('reportBody').innerHTML = body;
+  currentReport = document.getElementById('reportBody').innerText;
+}
+
+async function copyReport(){
+  if(!currentReport){toast('Proses laporan terlebih dahulu.');return}
+  await navigator.clipboard.writeText(currentReport);
+  toast('Narasi laporan disalin.');
+}
+</script>
+</body>
+</html>
