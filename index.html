@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>e-Laporan & Logbook Tenaga Pendukung | 2025–2030</title>
+
+<!-- SUPABASE JS SDK CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root {
   --bg: #f3f6fa;
@@ -300,7 +304,6 @@ th { background: #f1f6f3; font-weight: 700; }
 </head>
 <body>
 
-<!-- LOGO KEMENTERIAN PU RESMI BASE64 -->
 <script>
 const LOGO_PU_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77";
 </script>
@@ -410,7 +413,7 @@ const LOGO_PU_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAA
         </div>
         
         <div class="actions">
-          <button class="btn" id="saveBtn" onclick="saveActivity()">Simpan Ke Logbook</button>
+          <button class="btn" id="saveBtn" onclick="saveActivity()">Simpan Ke Logbook Online</button>
           <button class="btn secondary" onclick="resetForm()">Batal / Kosongkan Form</button>
         </div>
       </div>
@@ -461,7 +464,6 @@ const LOGO_PU_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAA
         </div>
 
         <div id="attendancePrintArea">
-          <!-- KOLEKSI FORMULIR KEDINASAN UNTUK TIAP INDIVIDU -->
           <div id="attendancePersonCards"></div>
         </div>
       </div>
@@ -544,15 +546,22 @@ const LOGO_PU_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAA
 <div class="toast" id="toast"></div>
 
 <script>
+// ==========================================
+// KONFIGURASI SUPABASE (GANTI DENGAN KUNCI ANDA)
+// ==========================================
+const SUPABASE_URL = "https://supabase.com/dashboard/org/mbvhkpbvnaephmlmxqql";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4eXdmZ2ZseXFyamdveHRocm91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MDI5MzQsImV4cCI6MjEwNDA3ODkzNH0.6w866xb83s1AeiRoBP1MGD1S7TXs0Z9IC8Db1upN5x8";
+
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 const VALID_USER = "admin";
 const VALID_PASS = "admin123";
 
-const KEY = 'elaporan_spppick_2025_2030';
 const PROGRESS_KEY = 'progress_data_2025_2030';
 const ATTENDANCE_KEY = 'attendance_data_2025_2030';
 const API_KEY_STORAGE = 'gemini_api_key_2026';
 
-let activities = JSON.parse(localStorage.getItem(KEY) || '[]');
+let activities = [];
 let progressData = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
 let attendanceData = JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '{}');
 let currentReport = '';
@@ -581,6 +590,52 @@ const CODES = [
   { code: 'PL', label: 'PL (Pelatihan)' },
   { code: 'TK', label: 'TK (Tanpa Keterangan)' }
 ];
+
+// FUNGSI UTAMA LOAD DATA DARI SUPABASE
+async function fetchActivitiesFromSupabase() {
+  if (!supabase) {
+    toast('Supabase SDK belum dimuat.');
+    return;
+  }
+  
+  const { data, error } = await supabase
+    .from('activities')
+    .select('*')
+    .order('date', { ascending: true });
+
+  if (error) {
+    console.error('Gagal mengambil data Supabase:', error);
+    toast('Gagal mengambil data dari server online.');
+  } else {
+    activities = data || [];
+    renderHome();
+    if(document.getElementById('logbookPage').classList.contains('active')) renderLogbook();
+    if(document.getElementById('data').classList.contains('active')) renderData();
+  }
+}
+
+// FUNGSI UNGGAH FOTO KE SUPABASE STORAGE
+async function uploadToSupabaseBucket(file, folder = 'photos') {
+  if (!supabase) return null;
+  
+  const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+  const filePath = `${folder}/${Date.now()}_${cleanName}`;
+  
+  const { data, error } = await supabase.storage
+    .from('documentation')
+    .upload(filePath, file);
+
+  if (error) {
+    console.error('Error Storage Upload:', error);
+    return null;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from('documentation')
+    .getPublicUrl(filePath);
+
+  return publicUrlData ? publicUrlData.publicUrl : null;
+}
 
 function initDropdowns() {
   const logbookYearSel = document.getElementById('logbookYearFilter');
@@ -631,7 +686,7 @@ function checkAuth() {
     document.getElementById('appContainer').style.display = 'flex';
     document.getElementById('loggedUser').textContent = sessionStorage.getItem('loggedUser') || 'Admin';
     initDropdowns();
-    renderHome();
+    fetchActivitiesFromSupabase();
     renderProgressView();
     resetForm();
   } else {
@@ -704,12 +759,11 @@ function openInNewTab(dataUrl) {
 async function processPhotos(files) {
   let photoData = [];
   for (let file of files) {
-    let dataUrl = await new Promise((resolve) => {
-      let reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.readAsDataURL(file);
-    });
-    photoData.push({ name: file.name, dataUrl: dataUrl });
+    toast('Mengunggah foto ke Cloud Supabase...');
+    let publicUrl = await uploadToSupabaseBucket(file, 'photos');
+    if(publicUrl) {
+      photoData.push({ name: file.name, dataUrl: publicUrl });
+    }
   }
   return photoData;
 }
@@ -717,12 +771,11 @@ async function processPhotos(files) {
 async function processDocs(files) {
   let docData = [];
   for (let file of files) {
-    let dataUrl = await new Promise((resolve) => {
-      let reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.readAsDataURL(file);
-    });
-    docData.push({ name: file.name, size: file.size, type: file.type, dataUrl: dataUrl });
+    toast('Mengunggah dokumen ke Cloud Supabase...');
+    let publicUrl = await uploadToSupabaseBucket(file, 'documents');
+    if(publicUrl) {
+      docData.push({ name: file.name, size: file.size, type: file.type, dataUrl: publicUrl });
+    }
   }
   return docData;
 }
@@ -745,7 +798,7 @@ function addActivityRow(data = null) {
       <div class="field"><label>Kegiatan yang Dilakukan *</label><input class="act-name" value="${data ? esc(data.name) : ''}" placeholder="Contoh: Rapat Koordinasi Sinkronisasi Program"></div>
       <div class="field"><label>Keterangan / Lokasi *</label><input class="act-location" value="${data ? esc(data.location) : ''}" placeholder="Contoh: Balai Prasarana Permukiman Wilayah Bengkulu / Via Zoom"></div>
     </div>
-    <div class="field"><label>Uraian Detail / Poin Pembahasan *</label><textarea class="act-desc" placeholder="Jelaskan proses pelaksanaan atau rincian kegiatan...">${data ? esc(data.desc) : ''}</textarea></div>
+    <div class="field"><label>Uraian Detail / Poin Pembahasan *</label><textarea class="act-desc" placeholder="Jelaskan proses pelaksanaan atau rincian kegiatan...">${data ? esc(data.description || data.desc) : ''}</textarea></div>
     <div class="grid">
       <div class="field"><label>Hasil / Output Kegiatan</label><textarea class="act-result" placeholder="Keputusan, berita acara, draft dokumen...">${data ? esc(data.result) : ''}</textarea></div>
       <div class="field"><label>Catatan / Kendala</label><textarea class="act-issue" placeholder="Catatan tindak lanjut atau kendala...">${data ? esc(data.issue) : ''}</textarea></div>
@@ -846,38 +899,63 @@ async function saveActivity(){
     const newDocs = await processDocs(docFiles);
 
     if (editId) {
-      let idx = activities.findIndex(x => x.id == editId);
-      if (idx !== -1) {
-        activities[idx].date = date;
-        activities[idx].name = name;
-        activities[idx].location = location;
-        activities[idx].desc = desc;
-        activities[idx].result = result;
-        activities[idx].issue = issue;
-        if(newPhotos.length) activities[idx].photos = (activities[idx].photos || []).concat(newPhotos);
-        if(newDocs.length) activities[idx].docs = (activities[idx].docs || []).concat(newDocs);
+      let existing = activities.find(x => x.id == editId);
+      let photos = (existing && existing.photos) ? existing.photos.concat(newPhotos) : newPhotos;
+      let docs = (existing && existing.docs) ? existing.docs.concat(newDocs) : newDocs;
+
+      const { error } = await supabase
+        .from('activities')
+        .update({
+          date: date,
+          name: name,
+          location: location,
+          description: desc,
+          result: result,
+          issue: issue,
+          photos: photos,
+          docs: docs
+        })
+        .eq('id', editId);
+
+      if (error) {
+        console.error(error);
+        toast('Gagal memperbarui data di Supabase.');
+      } else {
+        toast('Data logbook berhasil diperbarui secara online.');
       }
     } else {
-      const item = {
-        id: Date.now() + Math.random(),
-        date, name, location, desc, result, issue,
+      const newItem = {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        date: date,
+        name: name,
+        location: location,
+        description: desc,
+        result: result,
+        issue: issue,
         photos: newPhotos,
         docs: newDocs
       };
-      activities.push(item);
+
+      const { error } = await supabase
+        .from('activities')
+        .insert([newItem]);
+
+      if (error) {
+        console.error(error);
+        toast('Gagal menyimpan kegiatan ke Supabase.');
+      } else {
+        toast('Kegiatan berhasil disimpan ke logbook cloud.');
+      }
     }
   }
 
   if(!hasValid) {
-    toast('Nama kegiatan & uraian detail wajib diisi untuk tiap kegiatan.');
+    toast('Nama kegiatan & uraian detail wajib diisi.');
     return;
   }
 
-  activities.sort((a,b)=>a.date.localeCompare(b.date));
-  localStorage.setItem(KEY, JSON.stringify(activities));
-  toast(editId ? 'Data logbook berhasil diperbarui.' : 'Kegiatan berhasil disimpan ke logbook.');
+  fetchActivitiesFromSupabase();
   resetForm(); 
-  renderHome();
 }
 
 function editActivity(id){
@@ -893,25 +971,25 @@ function editActivity(id){
 
   document.getElementById('addActivityBtnBox').style.display = 'none';
   document.getElementById('formTitle').textContent = 'Koreksi Data Logbook';
-  document.getElementById('saveBtn').textContent = 'Perbarui Data';
+  document.getElementById('saveBtn').textContent = 'Perbarui Data Online';
   showPage('input', document.querySelectorAll('.nav button')[1]);
 }
 
-function removeExistingPhoto(actId, photoIdx) {
+async function removeExistingPhoto(actId, photoIdx) {
   let idx = activities.findIndex(x => x.id === actId);
   if(idx !== -1) {
     activities[idx].photos.splice(photoIdx, 1);
-    localStorage.setItem(KEY, JSON.stringify(activities));
+    await supabase.from('activities').update({ photos: activities[idx].photos }).eq('id', actId);
     editActivity(actId);
     toast('Foto dihapus.');
   }
 }
 
-function removeExistingDoc(actId, docIdx) {
+async function removeExistingDoc(actId, docIdx) {
   let idx = activities.findIndex(x => x.id === actId);
   if(idx !== -1) {
     activities[idx].docs.splice(docIdx, 1);
-    localStorage.setItem(KEY, JSON.stringify(activities));
+    await supabase.from('activities').update({ docs: activities[idx].docs }).eq('id', actId);
     editActivity(actId);
     toast('Dokumen dihapus.');
   }
@@ -926,7 +1004,7 @@ function resetForm(){
   addActivityRow();
 
   document.getElementById('formTitle').textContent = 'Input Kegiatan Harian';
-  document.getElementById('saveBtn').textContent = 'Simpan Ke Logbook';
+  document.getElementById('saveBtn').textContent = 'Simpan Ke Logbook Online';
 }
 
 function renderHome(){
@@ -963,7 +1041,7 @@ function renderHome(){
   }
 
   let a=activities.slice(-6).reverse();
-  document.getElementById('recent').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Hari</th><th>Kegiatan yang dilakukan</th><th>Keterangan</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td><b>${getDayName(x.date)}</b></td><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.desc)}</span></td><td>${esc(x.location)}</td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Belum ada kegiatan.</div>';
+  document.getElementById('recent').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Hari</th><th>Kegiatan yang dilakukan</th><th>Keterangan</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td><b>${getDayName(x.date)}</b></td><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.description || x.desc)}</span></td><td>${esc(x.location)}</td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Belum ada kegiatan.</div>';
 }
 
 function renderLogbook(){
@@ -1002,10 +1080,11 @@ function renderLogbook(){
         act.docs.forEach(d => docsList.push(`<div style="font-size:11px;margin-top:2px;"><a href="javascript:void(0)" onclick="openInNewTab('${d.dataUrl || '#'}')" style="color:var(--accent);text-decoration:none;font-weight:bold;">📄 ${esc(d.name)}</a></div>`));
       }
 
+      let descText = act.description || act.desc;
       html += `<tr>
         <td><b>${formatDateIndo(act.date)}</b></td>
         <td>${getDayName(act.date)}</td>
-        <td style="text-align:left;"><b>${esc(act.name)}</b>${act.desc ? `<br><span style="color:#475569;font-size:11px">${esc(act.desc)}</span>` : ''}</td>
+        <td style="text-align:left;"><b>${esc(act.name)}</b>${descText ? `<br><span style="color:#475569;font-size:11px">${esc(descText)}</span>` : ''}</td>
         <td>${esc(act.location || 'Balai Prasarana Permukiman Wilayah Bengkulu')}</td>
         <td>${docsList.length ? docsList.join('') : '<span class="muted">-</span>'}</td>
       </tr>`;
@@ -1016,7 +1095,6 @@ function renderLogbook(){
   document.getElementById('logbookTableContainer').innerHTML = html;
 }
 
-/* RENDERING ABSENSI SESUAI FORMAT RESMI KEDINASAN PU KEMENTERIAN */
 function renderAttendance() {
   const y = document.getElementById('attYearFilter').value;
   const m = document.getElementById('attMonthFilter').value;
@@ -1041,9 +1119,8 @@ function renderAttendance() {
 
     let cardHtml = `
     <div class="att-person-card">
-      <!-- KOP SURAT KEMENTERIAN PU RESMI -->
       <div class="kop-surat">
-        <img class="kop-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWKCAIAAADZisbWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR42uzdf4zdZaHn8Zl75o51prTO2dLpxakjhXuPXakVR7RbXG1rzOJtm5DIkrhKudw0RNfeJiJx0UBCcs1dYwJ/IFmNIQs0entDIJfYsoBIoSxMKlCgDFpG26mlI7dTuqe2dMY6d05m/zhYSxmm8+Oc83yf5/t6/WEG4l+fhEnmne/zPM1jD3c2QTg33PdxIwAQi0s/UL5mxYAdAKC2Cp+7p8UKhLW9b7ERAIiIPAEA9fAXJgAAAADCkicAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMngAAAAACkycAAACAwOQJAAAAIDB5AgAAAAhMniCwlUuOGAEAACDn5AkCK7b/0QgAAAA5J08AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABCYPAEAAAAEJk8AAAAAgckTAAAAQGDyBAAAABBYiwkI69IPlJuamnYdOP/oyTnWAAAAyCd5gsCuWTFwzYqBd/77" alt="Logo PU">
+        <img class="kop-logo" src="${LOGO_PU_SRC}" alt="Logo PU">
         <div class="kop-text">
           <div class="h1-pu">KEMENTERIAN PEKERJAAN UMUM</div>
           <div class="h2-pu">DIREKTORAT JENDERAL CIPTA KARYA</div>
@@ -1123,13 +1200,11 @@ function renderAttendance() {
       <td style="font-size:8pt; font-style:italic;"></td>
     </tr></tbody></table>
 
-    <!-- RINGKASAN REKAPITULASI KETERANGAN -->
     <div style="margin-top:10px; font-size:8.5pt; display:flex; justify-content:space-between; font-family:'Times New Roman', Times, serif;">
       <div><b>Keterangan Kode Absensi:</b> H: Hadir (✓) | DL: Dinas Luar | S: Sakit | I: Izin | C: Cuti | WS: Workshop | PL: Pelatihan | TK: Tanpa Keterangan | L: Hari Libur</div>
       <div><b>Total Kehadiran Kerja: ${countSummary['H']} Hari Kerja</b></div>
     </div>
 
-    <!-- BLOK TANDA TANGAN PEJABAT (PPK) & TENAGA PENDUKUNG -->
     <div class="ttd-container">
       <div class="ttd-box">
         Mengetahui,<br>
@@ -1214,7 +1289,7 @@ function renderProgressView() {
     progressData = YEARS.map(yr => {
       let count = activities.filter(a => a.date.startsWith(yr)).length;
       let target = 120;
-      return { year: yr, target: target, count: count, percent: Math.min(100, Math.round((count/target)*100)), sourceFile: 'Logbook Internal' };
+      return { year: yr, target: target, count: count, percent: Math.min(100, Math.round((count/target)*100)), sourceFile: 'Logbook Cloud' };
     });
   }
 
@@ -1228,7 +1303,7 @@ function renderProgressView() {
       <div class="progress-header">
         <div>
           <b style="font-size:15px;">Tahun Anggaran ${p.year}</b>
-          <span class="muted" style="font-size:11px; margin-left:10px;">Sumber File: ${esc(p.sourceFile || 'Internal')}</span>
+          <span class="muted" style="font-size:11px; margin-left:10px;">Sumber File: ${esc(p.sourceFile || 'Cloud Database')}</span>
         </div>
         <div style="font-weight:800; font-size:16px; color:var(--primary2);">${percent}%</div>
       </div>
@@ -1251,20 +1326,29 @@ function renderData(){
   let m=document.getElementById('monthFilter').value;
   
   let a=activities.filter(x=>{
-    let matchQuery = (!q || (x.name+' '+x.desc+' '+x.location).toLowerCase().includes(q));
+    let descText = x.description || x.desc || '';
+    let matchQuery = (!q || (x.name+' '+descText+' '+x.location).toLowerCase().includes(q));
     let matchYear = (!y || x.date.startsWith(y));
     let matchMonth = (!m || x.date.slice(5,7)===m);
     return matchQuery && matchYear && matchMonth;
   });
 
-  document.getElementById('dataTable').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Keterangan</th><th>Berkas & Dokumentasi</th><th>Aksi</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td style="text-align:left;"><b>${esc(x.name)}</b><br>${esc(x.desc)}</td><td>${esc(x.location)}</td><td>${(x.photos?x.photos.length:0)} foto, ${(x.docs?x.docs.length:0)} dok.</td><td><button class="btn warning" style="margin-bottom:4px" onclick="editActivity(${x.id})">Edit</button> <button class="btn danger" onclick="removeActivity(${x.id})">Hapus</button></td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Tidak ada data.</div>';
+  document.getElementById('dataTable').innerHTML=a.length?'<table><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Keterangan</th><th>Berkas & Dokumentasi</th><th>Aksi</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${formatDateIndo(x.date)}</td><td style="text-align:left;"><b>${esc(x.name)}</b><br>${esc(x.description || x.desc)}</td><td>${esc(x.location)}</td><td>${(x.photos?x.photos.length:0)} foto, ${(x.docs?x.docs.length:0)} dok.</td><td><button class="btn warning" style="margin-bottom:4px" onclick="editActivity(${x.id})">Edit</button> <button class="btn danger" onclick="removeActivity(${x.id})">Hapus</button></td></tr>`).join('')+'</tbody></table>':'<div class="muted" style="padding:18px">Tidak ada data.</div>';
 }
 
-function removeActivity(id){
-  if(confirm('Hapus kegiatan ini dari logbook?')){
-    activities=activities.filter(x=>x.id!==id);
-    localStorage.setItem(KEY,JSON.stringify(activities));
-    renderData();renderHome();toast('Data dihapus.')
+async function removeActivity(id){
+  if(confirm('Hapus kegiatan ini dari logbook cloud Supabase?')){
+    const { error } = await supabase
+      .from('activities')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast('Gagal menghapus data dari Supabase.');
+    } else {
+      toast('Data berhasil dihapus dari cloud.');
+      fetchActivitiesFromSupabase();
+    }
   }
 }
 
@@ -1279,7 +1363,7 @@ async function fetchGeminiNarrative(monthActivities, monthTitle) {
     day: getDayName(act.date),
     name: act.name,
     location: act.location,
-    desc: act.desc,
+    desc: act.description || act.desc,
     result: act.result
   }));
 
